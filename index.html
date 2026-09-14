@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臺北大未來：市民財政總管大作戰！</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .game-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 28px;
+            text-align: center;
+        }
+        .step-badge {
+            display: inline-block;
+            background: #2C3E50;
+            color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .dialogue-box {
+            background: #f8f9fa;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 4px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        .character-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .character {
+            background: #eef2f5;
+            padding: 15px;
+            border-radius: 12px;
+            width: 48%;
+        }
+        .character-icon {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        button {
+            background: #2980b9;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #1c5980;
+            transform: translateY(-2px);
+        }
+        .result-box {
+            background: #e8f4f8;
+            border: 1px solid #b8daff;
+            color: #004085;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: left;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <div id="game-content">
+        <!-- 內容透過 JavaScript 動態切換 -->
+    </div>
+</div>
+
+<script>
+    let state = {
+        step: 1,
+        choice: null,
+        principal: 10000,
+        earnedInterest: 0
+    };
+
+    function render() {
+        const container = document.getElementById('game-content');
+
+        // 關卡 1：選戰與建設資金
+        if (state.step === 1) {
+            container.innerHTML = `
+                <span class="step-badge">第 1 關 / 共 4 關</span>
+                <h2>1. 選戰開跑！政見要實現，錢從哪裡來？</h2>
+                <p>臺北市長大選熱烈展開！候選人提出了擴建捷運網、興建社會住宅等大型建設方案。</p>
+                <div class="dialogue-box">
+                    <b>🤔 思考一下：</b><br>
+                    推動動輒數百億的重大建設，除了等每年收稅之外，市府如何快速籌措資金？
+                </div>
+                <p style="font-size:0.95rem; color:#555;">👉 答案是：向市民與市場發行<b>「地方政府債券（市政債）」</b>！</p>
+                <div class="btn-group">
+                    <button onclick="nextStep(2)">看看市府與企業開出的投資條件 👉</button>
+                </div>
+            `;
+        } 
+        // 關卡 2：市政債 vs 企業債
+        else if (state.step === 2) {
+            container.innerHTML = `
+                <span class="step-badge">第 2 關 / 共 4 關</span>
+                <h2>2. 資金審查：你的 $10,000 建設基金要借給誰？</h2>
+                <div class="character-container">
+                    <div class="character">
+                        <div class="character-icon">🏛️</div>
+                        <b>臺北市政府</b>
+                        <p style="font-size:0.85rem; color:#555;">「興建捷運與公宅！每年給 <b>3% 穩定利息</b>，政府信用擔保！」</p>
+                    </div>
+                    <div class="character">
+                        <div class="character-icon">💻</div>
+                        <b>科技大廠</b>
+                        <p style="font-size:0.85rem; color:#555;">「蓋 AI 超級算力中心！每年給 <b>5.3% 高額利息</b>，承擔商業風險！」</p>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button onclick="makeChoice('gov')">🏛️ 買進臺北市政債（穩健安全，挺城市建設）</button>
+                    <button onclick="makeChoice('tech')">💻 買進科技公司債（追求高殖利率，承擔風險）</button>
+                    <button onclick="makeChoice('split')">⚖️ 兩者各配置一半（兼顧風險與回報）</button>
+                </div>
+            `;
+        } 
+        // 關卡 3：財政紀律評估
+        else if (state.step === 3) {
+            container.innerHTML = `
+                <span class="step-badge">第 3 關 / 共 4 關</span>
+                <h2>3. 財政紀律大考驗！</h2>
+                <div class="dialogue-box">
+                    <b>❓ 市民提問：</b><br>
+                    「政府發行這麼多債券借錢，會不會把城市吃垮？」
+                </div>
+                <div class="btn-group">
+                    <button onclick="answerQuiz(true)">不會！政府有穩定稅收與《公共債務法》嚴格控管舉債上限，極度安全。</button>
+                    <button onclick="answerQuiz(false)">會！發行債券就代表政府破產了，非常危險。</button>
+                </div>
+                <div id="quiz-result"></div>
+            `;
+        } 
+        // 關卡 4：結算與市民雙贏
+        else if (state.step === 4) {
+            let resultDetail = "";
+            if (state.choice === 'gov') {
+                resultDetail = "你選擇支持臺北市政府建設！每年穩穩領取 <b>$300 元利息 (3%)</b>，風險極低！";
+            } else if (state.choice === 'tech') {
+                resultDetail = "你選擇追求高收益科技債！每年順利領取 <b>$530 元利息 (5.3%)</b>！";
+            } else {
+                resultDetail = "你採用靈活配置！每年穩穩獲得 <b>$415 元綜合利息</b>，兼顧安全與收益！";
+            }
+
+            container.innerHTML = `
+                <span class="step-badge">第 4 關 / 最終結算</span>
+                <h2>4. 城市建設與市民資產雙贏！ 🎉</h2>
+                <div class="character-icon">🏆</div>
+                <div class="result-box">
+                    <p><b>💰 你的投資收益：</b><br>${resultDetail}</p>
+                    <p><b>🚇 城市建設成果：</b><br>市府透過債券籌得資金，新捷運線順利通車、社會住宅順利完工！</p>
+                    <p><b>✅ 到期還本：</b><br>債券到期後，當初投入的 <b>$10,000 本金全數歸還</b>！</p>
+                </div>
+                <div class="dialogue-box">
+                    <b>💡 學習總結（公共財政與投資）：</b><br>
+                    1. <b>政府發債</b>：是用公共信用籌集大資金進行公共建設。<br>
+                    2. <b>投資人好處</b>：買入市政債可以定期領取穩定利息，實現「讓錢為你與城市工作」！
+                </div>
+                <div class="btn-group">
+                    <button onclick="restartGame()">🔄 重新體驗遊戲</button>
+                </div>
+            `;
+        }
+    }
+
+    function nextStep(step) {
+        state.step = step;
+        render();
+    }
+
+    function makeChoice(choice) {
+        state.choice = choice;
+        state.step = 3;
+        render();
+    }
+
+    function answerQuiz(isCorrect) {
+        const resultDiv = document.getElementById('quiz-result');
+        if (isCorrect) {
+            resultDiv.innerHTML = `
+                <div class="result-box" style="background:#d4edda; border-color:#c3e6cb; color:#155724;">
+                    ⭕ <b>觀念完全正確！</b><br>
+                    地方政府發行債券有嚴格的法規限制（舉債上限），且公共建設能帶動城市經濟效益與後續稅收，因此市政債券被視為非常安全的投資選擇。
+                </div>
+                <div class="btn-group">
+                    <button onclick="nextStep(4)">前往觀看你的年度投資與市政結算 💰</button>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="result-box" style="background:#f8d7da; border-color:#f5c6cb; color:#721c24;">
+                    ❌ <b>觀念稍微修正一下喔！</b><br>
+                    適度的發債是健全公共財政的方式之一，政府受《公共債務法》規範，有穩定稅收作後盾，與企業破產是不一樣的概念喔！再試一次看看～
+                </div>
+            `;
+        }
+    }
+
+    function restartGame() {
+        state.step = 1;
+        state.choice = null;
+        render();
+    }
+
+    // 啟動遊戲
+    render();
+</script>
+
+</body>
+</html>
